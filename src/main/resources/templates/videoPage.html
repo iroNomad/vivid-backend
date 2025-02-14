@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+</head>
+<body>
+<video width="320" height="240" controls>
+<!--    <source th:src="@{'/uploads/' + ${video.filePath}}" type="video/mp4">-->
+    <source src="/12342_sample.mp4">
+    Your browser does not support the video tag.
+</video>
+<img src="../../../../uploads/avatar2.jpg">
+
+<p th:text="@{'/uploads/' + ${video.filePath}}"></p>
+
+</body>
+</html>
