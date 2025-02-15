@@ -5,14 +5,11 @@
     <title>Video</title>
 </head>
 <body>
-<video width="320" height="240" controls>
-<!--    <source th:src="@{'/uploads/' + ${video.filePath}}" type="video/mp4">-->
-    <source src="/12342_sample.mp4">
-    Your browser does not support the video tag.
-</video>
-<img src="../../../../uploads/avatar2.jpg">
-
-<p th:text="@{'/uploads/' + ${video.filePath}}"></p>
-
+    <h3 th:text="${video.title}"></h3>
+    <video width="1280" height="720" controls>
+        <source th:src="@{'/' + ${video.filePath}}">
+        Your browser does not support the video tag.
+    </video>
+    <p th:text="${video.description}"></p>
 </body>
 </html>
