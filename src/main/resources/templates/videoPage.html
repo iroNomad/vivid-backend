@@ -11,5 +11,15 @@
         Your browser does not support the video tag.
     </video>
     <p th:text="${video.description}"></p>
+    <p id="commentSection"></p>
+    <form>
+        <textarea></textarea>
+        <button type="submit">Post</button>
+    </form>
+<script>
+    let commentCount = 10;
+    let commentText = document.querySelector("#commentSection");
+    commentText.innerHTML = commentCount + " Comments";
+</script>
 </body>
 </html>
