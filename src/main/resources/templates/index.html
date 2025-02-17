@@ -2,10 +2,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Video Upload</title>
+    <title>Vivid</title>
 </head>
 <body>
-<h1>Upload Video</h1>
+<h1>Vivid</h1>
+<h2>Upload Video</h2>
 <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
     <input type="file" name="file" required>
     <input type="text" name="title" placeholder="Title" required>
@@ -13,7 +14,7 @@
     <button type="submit">Upload</button>
 </form>
 
-<h1>All Videos</h1>
+<h2>All Videos</h2>
 <ul>
     <li th:each="video : ${videos}">
         <a th:href="@{'/videos/' + ${video.id}}"
