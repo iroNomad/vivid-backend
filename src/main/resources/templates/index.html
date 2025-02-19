@@ -5,21 +5,25 @@
     <title>Vivid</title>
 </head>
 <body>
-<h1>Vivid</h1>
-<h2>Upload Video</h2>
-<form th:action="@{/upload}" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <input type="text" name="title" placeholder="Title" required>
-    <textarea name="description" placeholder="Description"></textarea>
-    <button type="submit">Upload</button>
-</form>
+    <h1>Vivid</h1>
+    <form action="https://www.google.com/search" method="GET">
+        <input type="text" name="q" placeholder="Search..." required>
+        <button type="submit">Search</button>
+    </form>
+    <h2>Upload Video</h2>
+    <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <input type="text" name="title" placeholder="Title" required>
+        <textarea name="description" placeholder="Description"></textarea>
+        <button type="submit">Upload</button>
+    </form>
 
-<h2>All Videos</h2>
-<ul>
-    <li th:each="video : ${videos}">
-        <a th:href="@{'/videos/' + ${video.id}}"
-           th:text="${video.title}">Video Title</a>
-    </li>
-</ul>
+    <h2>All Videos</h2>
+    <ul>
+        <li th:each="video : ${videos}">
+            <a th:href="@{'/videos/' + ${video.id}}"
+               th:text="${video.title}">Video Title</a>
+        </li>
+    </ul>
 </body>
 </html>
