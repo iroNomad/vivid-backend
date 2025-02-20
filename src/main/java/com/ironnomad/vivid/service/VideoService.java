@@ -45,6 +45,6 @@ public class VideoService {
     }
 
     public Video getVideoById(Long id) {
-        return videoRepository.findById(id);  // Handle Optional properly
+        return videoRepository.findById(id);
     }
 }

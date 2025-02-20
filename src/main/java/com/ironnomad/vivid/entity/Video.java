@@ -1,15 +1,14 @@
 package com.ironnomad.vivid.entity;
 
-
+import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-
-@Document(collection = "videos")
+@Entity
+@Table(name = "videos")
 @Data
 public class Video {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String description;
