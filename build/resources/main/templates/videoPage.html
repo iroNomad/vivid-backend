@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+</head>
+<body>
+    <h3 th:text="${video.title}"></h3>
+    <video width="1280" height="720" controls>
+        <source th:src="@{'/' + ${video.filePath}}">
+        Your browser does not support the video tag.
+    </video>
+    <p th:text="${video.description}"></p>
+    <p id="commentSection"></p>
+    <form>
+        <textarea></textarea>
+        <button type="submit">Post</button>
+    </form>
+<script>
+    let commentCount = 10;
+    let commentText = document.querySelector("#commentSection");
+    commentText.innerHTML = commentCount + " Comments";
+</script>
+</body>
+</html>
