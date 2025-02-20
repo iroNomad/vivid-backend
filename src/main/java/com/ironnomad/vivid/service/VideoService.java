@@ -11,8 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class VideoService {
@@ -45,6 +43,6 @@ public class VideoService {
     }
 
     public Video getVideoById(Long id) {
-        return videoRepository.findById(id);
+        return videoRepository.findById(id).get();
     }
 }
