@@ -18,23 +18,9 @@ public class VideoService {
     @Autowired
     private VideoRepository videoRepository;
 
-    private final String uploadDir = "uploads/";
+//    private final String uploadDir = "uploads/";
 
-    public Video uploadVideo(MultipartFile file, String title, String description) throws IOException {
-
-        String filename = title + "_" + file.getOriginalFilename();
-
-        // Define the full path to save the file
-        Path path = Paths.get(uploadDir, filename);
-        Files.createDirectories(path.getParent()); // Ensure folder exists
-        Files.write(path, file.getBytes()); // Save file
-
-        // Save only relative path in DB
-        Video video = new Video();
-        video.setTitle(title);
-        video.setDescription(description);
-        video.setFilePath(filename);
-
+    public Video uploadVideo(Video video) throws IOException {
         return videoRepository.save(video);
     }
 
@@ -43,6 +29,7 @@ public class VideoService {
     }
 
     public Video getVideoById(Long id) {
-        return videoRepository.findById(id).get();
+        return videoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Video not found with ID: " + id));
     }
 }

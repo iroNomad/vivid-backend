@@ -3,16 +3,14 @@ package com.ironnomad.vivid.controller;
 import com.ironnomad.vivid.entity.Video;
 import com.ironnomad.vivid.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("")
+@CrossOrigin
 public class VideoController {
 
     @Autowired
@@ -33,11 +31,9 @@ public class VideoController {
     }
 
     @PostMapping("/upload")
-    public String uploadVideo(@RequestParam("file") MultipartFile file,
-                              @RequestParam("title") String title,
-                              @RequestParam("description") String description) throws IOException {
-        videoService.uploadVideo(file, title, description);
-        return "redirect:/";
+    public String uploadVideo(@RequestBody Video video) throws IOException {
+        videoService.uploadVideo(video);
+        return "New video added";
     }
 }
 
