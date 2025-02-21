@@ -12,5 +12,5 @@ public class Video {
     private Long id;
     private String title;
     private String description;
-//    private String filePath;
+    private String filePath;
 }
