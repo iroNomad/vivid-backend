@@ -1,6 +1,7 @@
 package com.ironnomad.vivid.service;
 
 import com.ironnomad.vivid.entity.Video;
+import com.ironnomad.vivid.repository.VideoDTO;
 import com.ironnomad.vivid.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VideoService {
@@ -40,16 +43,20 @@ public class VideoService {
         Video video = new Video();
         video.setTitle(title);
         video.setDescription(description);
-        video.setFilePath(filePath); // Store file path in DB
+        video.setVideoFileName(filePath); // Store file path in DB
+        video.setUploadDateTime(LocalDateTime.now());
 
         videoRepository.save(video);
     }
 
-    public List<Video> getAllVideos() {
-        return getAllVideos();
+    public List<VideoDTO> getAllVideos() {
+        return videoRepository.findAll()
+                .stream()
+                .map(video -> new VideoDTO(video.getUserId(), video.getTitle(), video.getUploadDateTime()))
+                .collect(Collectors.toList());
     }
 
     public Video getVideoById(Long videoId) {
-        return getVideoById(videoId);
+        return videoRepository.findById(videoId).orElse(null);
     }
 }

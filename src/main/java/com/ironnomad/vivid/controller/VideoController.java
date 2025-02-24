@@ -1,6 +1,7 @@
 package com.ironnomad.vivid.controller;
 
 import com.ironnomad.vivid.entity.Video;
+import com.ironnomad.vivid.repository.VideoDTO;
 import com.ironnomad.vivid.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -18,19 +19,17 @@ public class VideoController {
     @Autowired
     private VideoService videoService;
 
-    @GetMapping("/")
-    public String getAllVideos(Model model) {
-        List<Video> videos = videoService.getAllVideos();
-        model.addAttribute("videos", videos);
-        return "index";
+    @GetMapping("/allVideos")
+    public List<VideoDTO> getAllVideos(Model model) {
+        return videoService.getAllVideos();
     }
 
-    @GetMapping("/videos/{videoId}")
-    public String getVideo(Model model, @PathVariable Long videoId) {
-        Video video = videoService.getVideoById(videoId);
-        model.addAttribute("video", video);
-        return "videoPage";
-    }
+//    @GetMapping("/videos/{videoId}")
+//    public String getVideo(Model model, @PathVariable Long videoId) {
+//        Video video = videoService.getVideoById(videoId);
+//        model.addAttribute("video", video);
+//        return "videoPage";
+//    }
 
     @PostMapping("/upload")
     public String uploadVideo(
