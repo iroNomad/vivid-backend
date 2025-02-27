@@ -26,10 +26,14 @@ public class VideoController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("video") MultipartFile videoFile) {
+    public ResponseEntity<Map<String, String>> uploadFile(
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("video") MultipartFile videoFile
+    ) {
         try {
             // Upload video and generate thumbnail
-            Map<String, String> fileUrls = s3Service.uploadVideo(videoFile);
+            Map<String, String> fileUrls = s3Service.uploadVideo(title, description, videoFile);
 
             return ResponseEntity.ok(fileUrls);
         } catch (IOException e) {

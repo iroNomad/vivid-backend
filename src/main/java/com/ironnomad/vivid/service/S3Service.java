@@ -49,7 +49,7 @@ public class S3Service {
         this.region = region; // Assign the region value
     }
 
-    public Map<String, String> uploadVideo(MultipartFile videoFile) throws IOException {
+    public Map<String, String> uploadVideo(String title, String description, MultipartFile videoFile) throws IOException {
         Map<String, String> fileUrls = new HashMap<>();
 
         // Generate a unique filename (without extension)
@@ -102,6 +102,13 @@ public class S3Service {
         System.out.println("Video URL: " + fileUrls.get("videoUrl"));
         System.out.println("Thumbnail URL: " + fileUrls.get("thumbnailUrl"));
 
+        Video video = new Video();
+        video.setTitle(title);
+        video.setDescription(description);
+        video.setVideoFileURL(fileUrls.get("videoUrl"));
+        video.setThumbnailFileURL(fileUrls.get("thumbnailUrl"));
+
+        videoRepository.save(video);
         return fileUrls;
     }
 
@@ -199,7 +206,7 @@ public class S3Service {
     public List<VideoDTO> getAllVideos() {
         return videoRepository.findAll()
                 .stream()
-                .map(video -> new VideoDTO(video.getUserId(), video.getTitle(), video.getUploadDateTime()))
+                .map(video -> new VideoDTO(video.getUserId(), video.getThumbnailFileURL(), video.getTitle(), video.getUploadDateTime()))
                 .collect(Collectors.toList());
     }
 

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 public class VideoDTO {
     private Long userId;
+    private String thumbnailFileURL;
     private String title;
     private LocalDateTime uploadDateTime;
 }
