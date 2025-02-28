@@ -2,9 +2,10 @@ package com.ironnomad.vivid.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,7 +15,7 @@ public class Video {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // ✅ Works with MySQL AUTO_INCREMENT
-    private Long id;
+    private Long videoId;
 
     @Column(nullable = false)
     private Long userId = 100L;
@@ -32,7 +33,7 @@ public class Video {
     private String videoFileURL;
 
     @CreationTimestamp
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(columnDefinition = "DATETIME") // ✅ Ensure MySQL stores as DATETIME
-    private LocalDateTime uploadDateTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Column(columnDefinition = "DATE") // ✅ Ensures MySQL stores only DATE (not DATETIME)
+    private LocalDate uploadDate;
 }

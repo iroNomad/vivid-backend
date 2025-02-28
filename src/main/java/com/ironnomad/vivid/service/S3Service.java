@@ -201,16 +201,28 @@ public class S3Service {
         return thumbnailFile;
     }
 
-
-
     public List<VideoDTO> getAllVideos() {
         return videoRepository.findAll()
                 .stream()
-                .map(video -> new VideoDTO(video.getUserId(), video.getThumbnailFileURL(), video.getTitle(), video.getUploadDateTime()))
+                .map(video -> new VideoDTO(
+                        video.getVideoId(),
+                        video.getUserId(),
+                        video.getThumbnailFileURL(),
+                        video.getTitle(),
+                        video.getUploadDate()
+                ))
                 .collect(Collectors.toList());
     }
 
-    public Video getVideoById(Long videoId) {
-        return videoRepository.findById(videoId).orElse(null);
+    public VideoDTO getVideoById(Long videoId) {
+        return videoRepository.findById(videoId)
+                .map(video -> new VideoDTO(
+                        video.getUserId(),
+                        video.getVideoFileURL(),
+                        video.getTitle(),
+                        video.getDescription(),
+                        video.getUploadDate()
+                ))
+                .orElse(null);
     }
 }

@@ -40,5 +40,10 @@ public class VideoController {
             return ResponseEntity.status(500).body(Map.of("error", "File upload failed: " + e.getMessage()));
         }
     }
+
+    @GetMapping("/video/{videoId}")
+    public VideoDTO getVideoById(@PathVariable("videoId") Long videoId) {
+        return s3Service.getVideoById(videoId);
+    }
 }
 
