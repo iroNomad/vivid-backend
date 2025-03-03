@@ -14,12 +14,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (not recommended for production)
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+                .cors(cors -> cors.configure(http)) // ✅ Enable CORS
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/allVideos", "/video/**").permitAll() // Allow public access to these endpoints
-                        .anyRequest().authenticated() // Require authentication for other endpoints
+                        .requestMatchers("/register", "/login", "/allVideos", "/video/**", "/mypage").permitAll() // Public endpoints
+                        .anyRequest().authenticated() // Require authentication for all other endpoints
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Use stateless sessions for JWT authentication
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Stateless JWT authentication
 
         return http.build();
     }
@@ -29,4 +30,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-

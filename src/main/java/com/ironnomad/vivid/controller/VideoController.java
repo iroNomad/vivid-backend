@@ -1,6 +1,7 @@
 package com.ironnomad.vivid.controller;
 
 import com.ironnomad.vivid.entity.User;
+import com.ironnomad.vivid.repository.UserDTO;
 import com.ironnomad.vivid.repository.UserRepository;
 import com.ironnomad.vivid.repository.VideoDTO;
 import com.ironnomad.vivid.repository.LoginRequest;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("")
@@ -38,7 +40,7 @@ public class VideoController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody LoginRequest request) {
         // Check if the username already exists
-        if (userRepository.findByUsername(request.getUsername()) != null) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already taken");
         }
 
@@ -56,27 +58,46 @@ public class VideoController {
         return ResponseEntity.ok("User registered successfully");
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername());
+        Optional<User> userOpt = userRepository.findByUsername(request.getUsername());
 
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        // Check if user exists and password matches
+        if (userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
-
-        // ✅ Generate JWT token (using Java JWT library)
+        User user = userOpt.get(); // Now we have the User object
         String token = jwtService.generateToken(user);
-
-        // ✅ Send token to frontend
         return ResponseEntity.ok(Map.of("token", token));
     }
-
 
     @GetMapping("/allVideos")
     public List<VideoDTO> getAllVideos() {
         return s3Service.getAllVideos();
     }
+
+    @GetMapping("/mypage")
+    public UserDTO getUserInfo(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("🚫 Missing or invalid token");
+        }
+
+        String token = authHeader.substring(7); // ✅ Extract token without "Bearer "
+        String username = jwtService.extractUsername(token); // ✅ Extract username from JWT
+        System.out.println("token: " + token);
+        System.out.println(username);
+
+        Optional<User> userOpt = userRepository.findByUsername(username);
+
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOpt.get();
+
+        return new UserDTO(user.getUsername(), user.getRegistrationDate());
+    }
+
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(
