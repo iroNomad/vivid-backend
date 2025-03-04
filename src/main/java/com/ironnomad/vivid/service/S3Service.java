@@ -1,6 +1,8 @@
 package com.ironnomad.vivid.service;
 
+import com.ironnomad.vivid.entity.User;
 import com.ironnomad.vivid.entity.Video;
+import com.ironnomad.vivid.repository.UserRepository;
 import com.ironnomad.vivid.repository.VideoDTO;
 import com.ironnomad.vivid.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ import java.util.stream.Collectors;
 public class S3Service {
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private VideoRepository videoRepository;
 
     private final S3Client s3Client;
@@ -49,7 +54,11 @@ public class S3Service {
         this.region = region; // Assign the region value
     }
 
-    public Map<String, String> uploadVideo(String title, String description, MultipartFile videoFile) throws IOException {
+    public Map<String, String> uploadVideo(String username, String title, String description, MultipartFile videoFile) throws IOException {
+        // Find user by username
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Map<String, String> fileUrls = new HashMap<>();
 
         // Generate a unique filename (without extension)
@@ -103,6 +112,7 @@ public class S3Service {
         System.out.println("Thumbnail URL: " + fileUrls.get("thumbnailUrl"));
 
         Video video = new Video();
+        video.setUser(user);
         video.setTitle(title);
         video.setDescription(description);
         video.setVideoFileURL(fileUrls.get("videoUrl"));
@@ -197,7 +207,7 @@ public class S3Service {
             throw new IOException("Generated thumbnail file is missing or empty.");
         }
 
-        System.out.println("✅ Thumbnail successfully generated at: " + thumbnailFile.getAbsolutePath());
+        System.out.println("Thumbnail successfully generated at: " + thumbnailFile.getAbsolutePath());
         return thumbnailFile;
     }
 
@@ -206,7 +216,7 @@ public class S3Service {
                 .stream()
                 .map(video -> new VideoDTO(
                         video.getVideoId(),
-                        video.getUserId(),
+                        video.getUser().getUsername(),
                         video.getThumbnailFileURL(),
                         video.getTitle(),
                         video.getUploadDate()
@@ -217,7 +227,7 @@ public class S3Service {
     public VideoDTO getVideoById(Long videoId) {
         return videoRepository.findById(videoId)
                 .map(video -> new VideoDTO(
-                        video.getUserId(),
+                        video.getUser().getUsername(),
                         video.getVideoFileURL(),
                         video.getTitle(),
                         video.getDescription(),

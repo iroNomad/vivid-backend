@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -77,43 +78,44 @@ public class VideoController {
     }
 
     @GetMapping("/mypage")
-    public UserDTO getUserInfo(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("🚫 Missing or invalid token");
-        }
+    public ResponseEntity<?> getUserInfo(Principal principal) {
+        String username = principal.getName(); // Get username from SecurityContext
 
-        String token = authHeader.substring(7); // ✅ Extract token without "Bearer "
-        String username = jwtService.extractUsername(token); // ✅ Extract username from JWT
-        System.out.println("token: " + token);
-        System.out.println(username);
-
-        Optional<User> userOpt = userRepository.findByUsername(username);
-
+        Optional<User> userOpt = userRepository.findById(username); // Fetch user from DB
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
         }
 
         User user = userOpt.get();
-
-        return new UserDTO(user.getUsername(), user.getRegistrationDate());
+        return ResponseEntity.ok(new UserDTO(user.getUsername(), user.getRegistrationDate()));
     }
+
 
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("video") MultipartFile videoFile
+            @RequestParam("video") MultipartFile videoFile,
+            Principal principal // Automatically get authenticated user
     ) {
+        String username = principal.getName(); // Get username from SecurityContext
+
+        Optional<User> userOpt = userRepository.findById(username); // Fetch user from DB
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
+        }
+
         try {
             // Upload video and generate thumbnail
-            Map<String, String> fileUrls = s3Service.uploadVideo(title, description, videoFile);
-
+            Map<String, String> fileUrls = s3Service.uploadVideo(username, title, description, videoFile);
             return ResponseEntity.ok(fileUrls);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(Map.of("error", "File upload failed: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "File upload failed: " + e.getMessage()));
         }
     }
+
 
     @GetMapping("/video/{videoId}")
     public VideoDTO getVideoById(@PathVariable("videoId") Long videoId) {

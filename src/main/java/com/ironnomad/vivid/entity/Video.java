@@ -6,7 +6,6 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "videos")
@@ -17,8 +16,9 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // ✅ Works with MySQL AUTO_INCREMENT
     private Long videoId;
 
-    @Column(nullable = false)
-    private Long userId = 100L;
+    @ManyToOne
+    @JoinColumn(name = "username", referencedColumnName = "username", nullable = false) // Foreign key column
+    private User user;
 
     @Column(length = 255, nullable = false)
     private String title;
