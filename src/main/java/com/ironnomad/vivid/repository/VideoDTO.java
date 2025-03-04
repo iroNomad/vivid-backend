@@ -13,11 +13,12 @@ public class VideoDTO {
     private String description;
     private LocalDate uploadDate;
 
-    public VideoDTO(Long videoId, String username, String thumbnailFileURL, String title, LocalDate uploadDate) {
+    public VideoDTO(Long videoId, String username, String thumbnailFileURL, String title,String description, LocalDate uploadDate) {
         this.videoId = videoId;
         this.username = username;
         this.thumbnailFileURL = thumbnailFileURL;
         this.title = title;
+        this.description = description;
         this.uploadDate = uploadDate;
     }
 

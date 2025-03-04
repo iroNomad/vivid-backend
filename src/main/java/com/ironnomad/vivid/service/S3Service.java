@@ -219,6 +219,7 @@ public class S3Service {
                         video.getUser().getUsername(),
                         video.getThumbnailFileURL(),
                         video.getTitle(),
+                        video.getDescription(),
                         video.getUploadDate()
                 ))
                 .collect(Collectors.toList());
