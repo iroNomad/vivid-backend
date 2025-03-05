@@ -1,9 +1,7 @@
 package com.ironnomad.vivid.service;
 
 import com.ironnomad.vivid.entity.User;
-import com.ironnomad.vivid.entity.Video;
 import com.ironnomad.vivid.repository.UserRepository;
-import com.ironnomad.vivid.repository.VideoDTO;
 import com.ironnomad.vivid.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +20,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class S3Service {
@@ -35,6 +31,9 @@ public class S3Service {
 
     @Autowired
     private VideoRepository videoRepository;
+
+    @Autowired
+    private VideoMetadataService videoMetadataService;
 
     private final S3Client s3Client;
 
@@ -108,18 +107,7 @@ public class S3Service {
             thumbnailFile.delete();
         }
 
-        System.out.println("Video URL: " + fileUrls.get("videoUrl"));
-        System.out.println("Thumbnail URL: " + fileUrls.get("thumbnailUrl"));
-
-        Video video = new Video();
-        video.setUser(user);
-        video.setTitle(title);
-        video.setDescription(description);
-        video.setVideoFileURL(fileUrls.get("videoUrl"));
-        video.setThumbnailFileURL(fileUrls.get("thumbnailUrl"));
-
-        videoRepository.save(video);
-        return fileUrls;
+        return videoMetadataService.saveVideoMetadata(user, title, description, fileUrls);
     }
 
     private File generateThumbnail(File videoFile, String baseFileName) throws IOException {
@@ -209,31 +197,5 @@ public class S3Service {
 
         System.out.println("Thumbnail successfully generated at: " + thumbnailFile.getAbsolutePath());
         return thumbnailFile;
-    }
-
-    public List<VideoDTO> getAllVideos() {
-        return videoRepository.findAll()
-                .stream()
-                .map(video -> new VideoDTO(
-                        video.getVideoId(),
-                        video.getUser().getUsername(),
-                        video.getThumbnailFileURL(),
-                        video.getTitle(),
-                        video.getDescription(),
-                        video.getUploadDate()
-                ))
-                .collect(Collectors.toList());
-    }
-
-    public VideoDTO getVideoById(Long videoId) {
-        return videoRepository.findById(videoId)
-                .map(video -> new VideoDTO(
-                        video.getUser().getUsername(),
-                        video.getVideoFileURL(),
-                        video.getTitle(),
-                        video.getDescription(),
-                        video.getUploadDate()
-                ))
-                .orElse(null);
     }
 }
