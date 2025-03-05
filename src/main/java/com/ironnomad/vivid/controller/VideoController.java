@@ -1,6 +1,7 @@
 package com.ironnomad.vivid.controller;
 
 import com.ironnomad.vivid.entity.User;
+import com.ironnomad.vivid.entity.Video;
 import com.ironnomad.vivid.repository.UserRepository;
 import com.ironnomad.vivid.repository.VideoDTO;
 import com.ironnomad.vivid.service.S3Service;

@@ -1,10 +1,13 @@
 package com.ironnomad.vivid.controller;
 
 import com.ironnomad.vivid.entity.User;
+import com.ironnomad.vivid.entity.Video;
 import com.ironnomad.vivid.repository.LoginRequest;
 import com.ironnomad.vivid.repository.UserDTO;
+import com.ironnomad.vivid.repository.UserPageDTO;
 import com.ironnomad.vivid.repository.UserRepository;
 import com.ironnomad.vivid.service.JwtService;
+import com.ironnomad.vivid.service.VideoMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,6 +33,9 @@ public class UserController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private VideoMetadataService videoMetadataService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody LoginRequest request) {
@@ -74,6 +81,8 @@ public class UserController {
         }
 
         User user = userOpt.get();
-        return ResponseEntity.ok(new UserDTO(user.getUsername(), user.getRegistrationDate()));
+        List<Video> videos = videoMetadataService.getVideosByUsername(username);
+        UserPageDTO userPageDTO = new UserPageDTO(user.getUsername(), user.getRegistrationDate(), videos);
+        return ResponseEntity.ok(userPageDTO);
     }
 }

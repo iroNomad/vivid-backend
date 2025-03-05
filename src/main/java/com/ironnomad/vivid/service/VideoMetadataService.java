@@ -56,4 +56,7 @@ public class VideoMetadataService {
                 ))
                 .orElse(null);
     }
+    public List<Video> getVideosByUsername(String username) {
+        return videoRepository.findByUser_Username(username);
+    }
 }
