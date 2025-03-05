@@ -60,7 +60,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
         User user = userOpt.get(); // Now we have the User object
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateAccessToken(user);
         return ResponseEntity.ok(Map.of("token", token));
     }
 
