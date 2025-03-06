@@ -4,6 +4,7 @@ import com.ironnomad.vivid.entity.User;
 import com.ironnomad.vivid.entity.Video;
 import com.ironnomad.vivid.repository.UserRepository;
 import com.ironnomad.vivid.repository.VideoDTO;
+import com.ironnomad.vivid.repository.VideoUpdateRequest;
 import com.ironnomad.vivid.service.S3Service;
 import com.ironnomad.vivid.service.VideoMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,20 +70,19 @@ public class VideoController {
     @PutMapping("/update/{videoId}")
     public ResponseEntity<Void> updateVideo(
             @PathVariable("videoId") Long videoId,
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
+            @RequestBody VideoUpdateRequest request,
             Principal principal) {
         Optional<User> userOpt = getAuthenticatedUser(principal);
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        videoMetadataService.updateVideo(videoId, title, description);
+        videoMetadataService.updateVideo(videoId, request.getTitle(), request.getDescription());
         return ResponseEntity.ok().build();
     }
 
-    private Optional<User> getAuthenticatedUser(Principal principal) {
-        String username = principal.getName();
-        return userRepository.findById(username);
+    public Optional<User> getAuthenticatedUser(Principal principal) {
+        String username = principal.getName(); // Get username from SecurityContext
+        return userRepository.findById(username); // Fetch user from DB
     }
 }
 
