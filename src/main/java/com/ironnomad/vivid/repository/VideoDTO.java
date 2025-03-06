@@ -22,9 +22,10 @@ public class VideoDTO {
         this.uploadDate = uploadDate;
     }
 
-    public VideoDTO(String username, String videoFileURL, String title, String description, LocalDate uploadDate) {
+    public VideoDTO(String username, String videoFileURL, String thumbnailFileURL, String title, String description, LocalDate uploadDate) {
         this.username = username;
         this.videoFileURL = videoFileURL;
+        this.thumbnailFileURL = thumbnailFileURL;
         this.title = title;
         this.description = description;
         this.uploadDate = uploadDate;

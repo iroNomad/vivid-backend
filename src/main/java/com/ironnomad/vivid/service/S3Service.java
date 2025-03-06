@@ -12,6 +12,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.BufferedReader;
@@ -197,5 +198,33 @@ public class S3Service {
 
         System.out.println("Thumbnail successfully generated at: " + thumbnailFile.getAbsolutePath());
         return thumbnailFile;
+    }
+
+    public void deleteVideo(String videoFileURL, String thumbnailFileURL) {
+
+        // Delete video file
+        if (videoFileURL != null) {
+            String videoKey = extractKeyFromUrl(videoFileURL);
+            DeleteObjectRequest deleteVideoRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(videoKey)
+                    .build();
+            s3Client.deleteObject(deleteVideoRequest);
+        }
+
+        // Delete thumbnail
+        if (thumbnailFileURL != null) {
+            String thumbnailKey = extractKeyFromUrl(thumbnailFileURL);
+            DeleteObjectRequest deleteThumbnailRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(thumbnailKey)
+                    .build();
+            s3Client.deleteObject(deleteThumbnailRequest);
+        }
+    }
+
+    private String extractKeyFromUrl(String url) {
+        // Example URL: https://bucket-name.s3.region.amazonaws.com/key
+        return url.substring(url.indexOf(".amazonaws.com/") + ".amazonaws.com/".length());
     }
 }

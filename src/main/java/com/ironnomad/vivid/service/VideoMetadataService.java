@@ -50,6 +50,7 @@ public class VideoMetadataService {
                 .map(video -> new VideoDTO(
                         video.getUser().getUsername(),
                         video.getVideoFileURL(),
+                        video.getThumbnailFileURL(),
                         video.getTitle(),
                         video.getDescription(),
                         video.getUploadDate()
@@ -66,5 +67,9 @@ public class VideoMetadataService {
             video.setDescription(description);
             videoRepository.save(video);
         });
+    }
+
+    public void deleteVideo(Long videoId) {
+        videoRepository.deleteById(videoId);
     }
 }

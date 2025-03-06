@@ -80,6 +80,41 @@ public class VideoController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/delete/{videoId}")
+    public ResponseEntity<?> deleteVideo(@PathVariable("videoId") Long videoId, Principal principal) {
+        Optional<User> userOpt = getAuthenticatedUser(principal);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "User not found"));
+        }
+
+        // Get video metadata to check ownership and get file paths
+        VideoDTO video = videoMetadataService.getVideoById(videoId);
+        if (video == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Video not found"));
+        }
+
+        // Check if the user owns the video
+        if (!video.getUsername().equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Not authorized to delete this video"));
+        }
+
+        try {
+            // Delete from S3
+            s3Service.deleteVideo(video.getVideoFileURL(), video.getThumbnailFileURL());
+            // Delete metadata from DB
+            videoMetadataService.deleteVideo(videoId);
+
+            return ResponseEntity.ok(Map.of("message", "Video deleted successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete video: " + e.getMessage()));
+        }
+    }
+
+
     public Optional<User> getAuthenticatedUser(Principal principal) {
         String username = principal.getName(); // Get username from SecurityContext
         return userRepository.findById(username); // Fetch user from DB
