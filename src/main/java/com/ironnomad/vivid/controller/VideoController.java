@@ -65,5 +65,24 @@ public class VideoController {
     public VideoDTO getVideoById(@PathVariable("videoId") Long videoId) {
         return videoMetadataService.getVideoById(videoId);
     }
+
+    @PutMapping("/update/{videoId}")
+    public ResponseEntity<Void> updateVideo(
+            @PathVariable("videoId") Long videoId,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            Principal principal) {
+        Optional<User> userOpt = getAuthenticatedUser(principal);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        videoMetadataService.updateVideo(videoId, title, description);
+        return ResponseEntity.ok().build();
+    }
+
+    private Optional<User> getAuthenticatedUser(Principal principal) {
+        String username = principal.getName();
+        return userRepository.findById(username);
+    }
 }
 

@@ -59,4 +59,12 @@ public class VideoMetadataService {
     public List<Video> getVideosByUsername(String username) {
         return videoRepository.findByUser_Username(username);
     }
+
+    public void updateVideo(Long videoId, String title, String description) {
+        videoRepository.findById(videoId).ifPresent(video -> {
+            video.setTitle(title);
+            video.setDescription(description);
+            videoRepository.save(video);
+        });
+    }
 }
