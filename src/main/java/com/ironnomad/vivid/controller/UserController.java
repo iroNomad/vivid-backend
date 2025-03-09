@@ -51,6 +51,7 @@ public class UserController {
         newUser.setUsername(request.getUsername());
         newUser.setPassword(hashedPassword);
         newUser.setRegistrationDate(LocalDate.now());
+        newUser.setAvatarCode(request.getAvatarCode());
 
         userRepository.save(newUser);
 
@@ -81,7 +82,7 @@ public class UserController {
 
         User user = userOpt.get();
         List<Video> videos = videoMetadataService.getVideosByUsername(username);
-        UserPageDTO userPageDTO = new UserPageDTO(user.getUsername(), user.getRegistrationDate(), videos);
+        UserPageDTO userPageDTO = new UserPageDTO(user.getUsername(), user.getRegistrationDate(),user.getAvatarCode() ,videos);
         return ResponseEntity.ok(userPageDTO);
     }
 }
