@@ -112,17 +112,39 @@ public class S3Service {
     }
 
     private File generateThumbnail(File videoFile, String baseFileName) throws IOException {
-        File thumbnailFile = new File("C:\\temp\\" + baseFileName + ".jpg");
+        // Create a platform-independent temp directory
+        String tempDirPath = System.getProperty("java.io.tmpdir");
+        File tempDir = new File(tempDirPath);
+        if (!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
 
-        // Ensure C:\temp directory exists
-        new File("C:\\temp").mkdirs();
+        // Create thumbnail file in the temp directory
+        File thumbnailFile = new File(tempDir, baseFileName + ".jpg");
 
         // FFmpeg path
-        String ffmpegPath = "C:\\dev\\ffmpeg-7.1-full_build\\bin\\ffmpeg.exe";
+        // String ffmpegPath = "C:\\dev\\ffmpeg-7.1-full_build\\bin\\ffmpeg.exe";
+        String ffmpegPath = "/usr/bin/ffmpeg";
+
+        // Verify FFmpeg exists
+        File ffmpegFile = new File(ffmpegPath);
+        if (!ffmpegFile.exists()) {
+            throw new IOException("FFmpeg not found at: " + ffmpegPath);
+        }
 
         // Step 1: Get video duration
-        String durationCommand = String.format("\"%s\" -i \"%s\" 2>&1", ffmpegPath, videoFile.getAbsolutePath());
-        Process durationProcess = Runtime.getRuntime().exec(durationCommand);
+//        String durationCommand = String.format("\"%s\" -i \"%s\" 2>&1", ffmpegPath, videoFile.getAbsolutePath());
+//        Process durationProcess = Runtime.getRuntime().exec(durationCommand);
+
+        // Get video duration for Amazon Linux
+        String[] durationCmd = {
+                ffmpegPath,
+                "-i",
+                videoFile.getAbsolutePath()
+        };
+        ProcessBuilder durationBuilder = new ProcessBuilder(durationCmd);
+//        durationBuilder.redirectErrorStream(true);
+        Process durationProcess = durationBuilder.start();
 
         // Read output to find duration
         BufferedReader reader = new BufferedReader(new InputStreamReader(durationProcess.getErrorStream()));
@@ -130,12 +152,20 @@ public class S3Service {
         String durationStr = null;
 
         while ((line = reader.readLine()) != null) {
+            System.out.println("FFmpeg output: " + line); // Add this for debugging
             if (line.contains("Duration:")) {
                 durationStr = line.split("Duration: ")[1].split(",")[0]; // Extract duration part
                 break;
             }
         }
         reader.close();
+
+        try {
+            durationProcess.waitFor();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Process interrupted", e);
+        }
 
         if (durationStr == null) {
             throw new IOException("Could not determine video duration.");
@@ -162,8 +192,6 @@ public class S3Service {
                 "-vf", "scale=320:-1",
                 thumbnailFile.getAbsolutePath()
         };
-
-        System.out.println("Running FFmpeg command: " + String.join(" ", command));
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true);
@@ -199,7 +227,6 @@ public class S3Service {
         System.out.println("Thumbnail successfully generated at: " + thumbnailFile.getAbsolutePath());
         return thumbnailFile;
     }
-
     public void deleteVideo(String videoFileURL, String thumbnailFileURL) {
 
         // Delete video file

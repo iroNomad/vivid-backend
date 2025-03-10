@@ -51,6 +51,11 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+bootJar {
+	archiveBaseName.set('vivid-spring-app')
+	archiveVersion.set('1.0')
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
