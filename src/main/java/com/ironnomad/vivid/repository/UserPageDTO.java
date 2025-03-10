@@ -15,5 +15,6 @@ import java.util.List;
 public class UserPageDTO {
     private String username;
     private LocalDate registrationDate;
+    private Integer avatarCode;
     private List<Video> videos;
 }

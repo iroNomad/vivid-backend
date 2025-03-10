@@ -17,9 +17,12 @@ public class User {
     @Column(length = 50) // Limit username length
     private String username;
 
-    @Column(nullable = false) // Ensure password is always stored
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, updatable = false) // Registration date should not change
     private LocalDate registrationDate;
+
+    @Column(nullable = false)
+    private int avatarCode;
 }
