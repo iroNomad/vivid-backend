@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/vivid.main.iml" filepath="$PROJECT_DIR$/.idea/modules/vivid.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/vivid.test.iml" filepath="$PROJECT_DIR$/.idea/modules/vivid.test.iml" />
     </modules>
   </component>
 </project>

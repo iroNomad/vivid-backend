@@ -123,7 +123,6 @@ public class S3Service {
         File thumbnailFile = new File(tempDir, baseFileName + ".jpg");
 
         // FFmpeg path
-        // String ffmpegPath = "C:\\dev\\ffmpeg-7.1-full_build\\bin\\ffmpeg.exe";
         String ffmpegPath = "/usr/bin/ffmpeg";
 
         // Verify FFmpeg exists
@@ -132,10 +131,6 @@ public class S3Service {
             throw new IOException("FFmpeg not found at: " + ffmpegPath);
         }
 
-        // Step 1: Get video duration
-//        String durationCommand = String.format("\"%s\" -i \"%s\" 2>&1", ffmpegPath, videoFile.getAbsolutePath());
-//        Process durationProcess = Runtime.getRuntime().exec(durationCommand);
-
         // Get video duration for Amazon Linux
         String[] durationCmd = {
                 ffmpegPath,
@@ -143,7 +138,6 @@ public class S3Service {
                 videoFile.getAbsolutePath()
         };
         ProcessBuilder durationBuilder = new ProcessBuilder(durationCmd);
-//        durationBuilder.redirectErrorStream(true);
         Process durationProcess = durationBuilder.start();
 
         // Read output to find duration
